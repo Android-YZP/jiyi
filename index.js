@@ -31,7 +31,7 @@ const ENGINE_TAG = 'horae-official';
 const HORAE_REGEX_RULES = [
     {
         id: 'horae_think_sanitize',
-        scriptName: 'Horae - 思维链标签安全化',
+        scriptName: '时光记忆 - 思维链标签安全化',
         description: '将思维链内的<horae>等标签转为全角括号，防止DOM解析冲突与收束误吞',
         findRegex: '/<(\\/?horae(?:event|rpg|table[^>]*)?)>(?=[\\s\\S]*?<\\/think(?:ing)?>)/gi',
         replaceString: '‹$1›',
@@ -47,7 +47,7 @@ const HORAE_REGEX_RULES = [
     },
     {
         id: 'horae_hide',
-        scriptName: 'Horae - 隐藏状态标签',
+        scriptName: '时光记忆 - 隐藏状态标签',
         description: '隐藏<horae>状态标签，不显示在正文，不发送给AI',
         findRegex: '/(?:<horae>(?:(?!<\\/think(?:ing)?>|<horae>)[\\s\\S])*?<\\/horae>|<!--horae[\\s\\S]*?-->)/gim',
         replaceString: '',
@@ -63,7 +63,7 @@ const HORAE_REGEX_RULES = [
     },
     {
         id: 'horae_event_display_only',
-        scriptName: 'Horae - 隐藏事件标签',
+        scriptName: '时光记忆 - 隐藏事件标签',
         description: '隐藏<horaeevent>事件标签的显示，不发送给AI',
         findRegex: '/<horaeevent>(?:(?!<\\/think(?:ing)?>|<horaeevent>)[\\s\\S])*?<\\/horaeevent>/gim',
         replaceString: '',
@@ -79,7 +79,7 @@ const HORAE_REGEX_RULES = [
     },
     {
         id: 'horae_table_hide',
-        scriptName: 'Horae - 隐藏表格标签',
+        scriptName: '时光记忆 - 隐藏表格标签',
         description: '隐藏<horaetable>标签，不显示在正文，不发送给AI',
         findRegex: '/<horaetable[:\\uff1a][\\s\\S]*?<\\/horaetable(?:[:\\uff1a][^>]*)?>/gim',
         replaceString: '',
@@ -95,7 +95,7 @@ const HORAE_REGEX_RULES = [
     },
     {
         id: 'horae_rpg_hide',
-        scriptName: 'Horae - 隐藏RPG标签',
+        scriptName: '时光记忆 - 隐藏RPG标签',
         description: '隐藏<horaerpg>标签，不显示在正文，不发送给AI',
         findRegex: '/<horaerpg>(?:(?!<\\/think(?:ing)?>|<horaerpg>)[\\s\\S])*?<\\/horaerpg>/gim',
         replaceString: '',
@@ -157,9 +157,9 @@ const DEFAULT_SETTINGS = {
     globalTables: [],              // 全局表格（跨角色卡共享）
     showTopIcon: true,             // 显示顶部导航栏图标
     customTablesPrompt: '',        // 自定义表格填写规则提示词（空=使用默认）
-    sendLocationMemory: false,     // 发送场景记忆（地点固定特征描述）
+    sendLocationMemory: true,      // 发送场景记忆（地点固定特征描述）
     customLocationPrompt: '',      // 自定义场景记忆提示词（空=使用默认）
-    sendRelationships: false,      // 发送关系网络
+    sendRelationships: true,       // 发送关系网络
     sendMood: false,               // 发送情绪/心理状态追踪
     customRelationshipPrompt: '',  // 自定义关系网络提示词（空=使用默认）
     customMoodPrompt: '',          // 自定义情绪追踪提示词（空=使用默认）
@@ -1016,7 +1016,7 @@ function saveSettings(options = {}) {
  */
 function showToast(message, type = 'info') {
     if (window.toastr) {
-        toastr[type](message, 'Horae');
+        toastr[type](message);
     } else {
         console.log(`[Horae] ${type}: ${message}`);
     }
@@ -16258,10 +16258,6 @@ async function _initVectorModel() {
         const chatId = _deriveChatId(ctx);
         await vectorManager.loadChat(chatId, horaeManager.getChat());
 
-        const displayName = settings.vectorSource === 'api'
-            ? `API: ${settings.vectorApiModel}`
-            : vectorManager.modelName.split('/').pop();
-        showToast(t('toast.vectorModelLoaded', { name: displayName }), 'success');
     } catch (err) {
         console.error('[Horae] vector model load failed:', err);
         const friendly = settings.vectorSource === 'api' ? _vectorErrorHint(err) : (err?.message || String(err));
@@ -21569,5 +21565,4 @@ jQuery(async () => {
 
     isInitialized = true;
     _chatFullyLoaded = true;
-    console.log(`[Horae] v${VERSION} 加载完成！作者: SenriYuki`);
 });
